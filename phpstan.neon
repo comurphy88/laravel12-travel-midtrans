@@ -1,0 +1,24 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 5
+    paths:
+        - app
+        - routes
+    tmpDir: bootstrap/cache/phpstan
+    
+    # Ignore false positive errors with Illuminate\Log\LogManager
+    ignoreErrors:
+        - '#Expected type.*Found.*array<string, mixed>#'
+        - '#Call to an undefined method request\(\)->user\(\)#'
+        - '#Undefined method.*id#'
+        
+    # Exclude specific files
+    excludePaths:
+        - tests
+        - database
+        
+    # Laravel-specific configurations
+    databaseMigrationsPath:
+        - database/migrations

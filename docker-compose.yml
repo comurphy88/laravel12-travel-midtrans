@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: raven-travel-app
+    container_name: raven-travel-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - raven-travel
+
+  nginx:
+    image: nginx:alpine
+    container_name: raven-travel-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - raven-travel
+
+  db:
+    image: mysql:8.0
+    container_name: raven-travel-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: raven_travel
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - raven-travel
+
+  redis:
+    image: redis:alpine
+    container_name: raven-travel-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - raven-travel
+
+volumes:
+  dbdata:
+    driver: local
+
+networks:
+  raven-travel:
+    driver: bridge
