@@ -37,8 +37,8 @@ class AdminGalleryTest extends TestCase
     {
         $data = [
             'title' => 'Test Gallery',
-            // 👇 Menggunakan domain Unsplash agar lolos validasi Controller
-            'image' => 'https://images.unsplash.com/photo-test-image-123.jpg',
+            // GANTI DENGAN UNSPLASH:
+            'image' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
             '_token' => csrf_token(),
         ];
 
@@ -47,7 +47,7 @@ class AdminGalleryTest extends TestCase
         $response->assertRedirect(route('admin.galleries.index'));
         $this->assertDatabaseHas('galleries', [
             'title' => 'Test Gallery',
-            'image' => 'https://images.unsplash.com/photo-test-image-123.jpg',
+            'image' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
         ]);
     }
 
@@ -56,8 +56,8 @@ class AdminGalleryTest extends TestCase
         $gallery = Gallery::factory()->create();
         $data = [
             'title' => 'Updated Title',
-            // 👇 Menggunakan domain Unsplash agar lolos validasi Controller
-            'image' => 'https://images.unsplash.com/photo-updated-image-456.jpg',
+            // GANTI DENGAN UNSPLASH:
+            'image' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
             '_token' => csrf_token(),
         ];
 
@@ -66,7 +66,7 @@ class AdminGalleryTest extends TestCase
         $response->assertRedirect(route('admin.galleries.index'));
         $this->assertDatabaseHas('galleries', [
             'title' => 'Updated Title', 
-            'image' => 'https://images.unsplash.com/photo-updated-image-456.jpg'
+            'image' => 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'
         ]);
     }
 
