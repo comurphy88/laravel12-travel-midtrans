@@ -1,138 +1,79 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace Tests\Feature;
 
-use App\Http\Controllers\Controller;
-use App\Models\ActivityLog;
 use App\Models\Gallery;
-use App\Repositories\GalleryRepository;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\View\View;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Session;
+use Tests\TestCase;
 
-class AdminGalleryController extends Controller
+class AdminGalleryTest extends TestCase
 {
-    /**
-     * Trusted image hostnames (exact host match, not substring).
-     *
-     * @var array<string>
-     */
-    private const ALLOWED_IMAGE_HOSTS = [
-        'images.unsplash.com',
-        'plus.unsplash.com',
-        'source.unsplash.com',
-    ];
+    use RefreshDatabase;
 
-    public function __construct(
-        private readonly GalleryRepository $galleryRepository,
-    ) {}
+    protected User $user;
 
-    public function index(): View
+    protected function setUp(): void
     {
-        $galleries = $this->galleryRepository->getAllPaginated();
-
-        return view('admin.galleries.index', compact('galleries'));
+        parent::setUp();
+        $this->user = User::factory()->createOne(['role' => 'admin', 'email_verified_at' => now()]);
+        $this->actingAs($this->user);
+        Session::start();
+        session(['_token' => csrf_token()]);
     }
 
-    public function create(): View
+    public function test_index_displays_galleries()
     {
-        return view('admin.galleries.form');
+        Gallery::factory()->count(3)->create();
+
+        $response = $this->get(route('admin.galleries.index'));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('galleries');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function test_store_creates_gallery()
     {
-        $validated = $this->validateGallery($request);
+        $data = [
+            'title' => 'Test Gallery',
+            'image' => 'https://images.unsplash.com/photo-1234567890.jpg',
+            '_token' => csrf_token(),
+        ];
 
-        if (! $validated) {
-            return back()->withInput();
-        }
+        $response = $this->post(route('admin.galleries.store'), $data);
 
-        try {
-            $gallery = $this->galleryRepository->create($validated);
-            ActivityLog::log('create', "Menambah galeri: {$gallery->title}", 'galleries', $gallery->id);
-
-            return redirect()->route('admin.galleries.index')->with('success', 'Galeri berhasil ditambahkan.');
-        } catch (\Exception $e) {
-            Log::error('Error creating gallery: ' . $e->getMessage());
-
-            return back()->with('error', 'Terjadi kesalahan saat menambah galeri.')->withInput();
-        }
+        $response->assertRedirect(route('admin.galleries.index'));
+        $this->assertDatabaseHas('galleries', [
+            'title' => 'Test Gallery',
+            'image' => 'https://images.unsplash.com/photo-1234567890.jpg',
+        ]);
     }
 
-    public function edit(Gallery $gallery): View
+    public function test_update_modifies_gallery()
     {
-        return view('admin.galleries.form', compact('gallery'));
+        $gallery = Gallery::factory()->create();
+        $data = [
+            'title' => 'Updated Title',
+            'image' => 'https://plus.unsplash.com/photo-updated.jpg',
+            '_token' => csrf_token(),
+        ];
+
+        $response = $this->put(route('admin.galleries.update', $gallery), $data);
+
+        $response->assertRedirect(route('admin.galleries.index'));
+        $this->assertDatabaseHas('galleries', ['title' => 'Updated Title', 'image' => 'https://plus.unsplash.com/photo-updated.jpg']);
     }
 
-    public function update(Request $request, Gallery $gallery): RedirectResponse
+    public function test_destroy_deletes_gallery()
     {
-        $validated = $this->validateGallery($request);
+        $gallery = Gallery::factory()->create();
 
-        if (! $validated) {
-            return back()->withInput();
-        }
-
-        try {
-            $this->galleryRepository->update($gallery, $validated);
-            ActivityLog::log('update', "Mengubah galeri: {$gallery->title}", 'galleries', $gallery->id);
-
-            return redirect()->route('admin.galleries.index')->with('success', 'Galeri berhasil diperbarui.');
-        } catch (\Exception $e) {
-            Log::error('Error updating gallery: ' . $e->getMessage());
-
-            return back()->with('error', 'Terjadi kesalahan saat memperbarui galeri.')->withInput();
-        }
-    }
-
-    public function destroy(Gallery $gallery): RedirectResponse
-    {
-        try {
-            ActivityLog::log('delete', "Menghapus galeri: {$gallery->title}", 'galleries', $gallery->id);
-            $this->galleryRepository->delete($gallery);
-
-            return redirect()->route('admin.galleries.index')->with('success', 'Galeri berhasil dihapus.');
-        } catch (\Exception $e) {
-            Log::error('Error deleting gallery: ' . $e->getMessage());
-
-            return back()->with('error', 'Terjadi kesalahan saat menghapus galeri.');
-        }
-    }
-
-    // -------------------------------------------------------------------------
-
-    /**
-     * Validate the request and return the cleaned data array, or null on failure.
-     * Centralises the identical store/update validation block.
-     *
-     * @return array<string, string>|null
-     */
-    private function validateGallery(Request $request): ?array
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'image' => 'required|url|max:500',
+        $response = $this->delete(route('admin.galleries.destroy', $gallery), [
+            '_token' => csrf_token(),
         ]);
 
-        if (! $this->isAllowedImageHost($validated['image'])) {
-            session()->flash('error', 'URL gambar harus dari domain terpercaya (Unsplash).');
-
-            return null;
-        }
-
-        $validated['title'] = strip_tags($validated['title']);
-
-        return $validated;
-    }
-
-    /**
-     * Check the URL's hostname against the exact allowlist.
-     * Uses parse_url() instead of stripos() to prevent bypass via crafted paths.
-     */
-    private function isAllowedImageHost(string $url): bool
-    {
-        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
-
-        return in_array($host, self::ALLOWED_IMAGE_HOSTS, strict: true);
+        $response->assertRedirect(route('admin.galleries.index'));
+        $this->assertDatabaseMissing('galleries', ['id' => $gallery->id]);
     }
 }
