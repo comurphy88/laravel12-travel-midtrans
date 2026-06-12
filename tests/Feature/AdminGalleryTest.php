@@ -37,7 +37,8 @@ class AdminGalleryTest extends TestCase
     {
         $data = [
             'title' => 'Test Gallery',
-            'image' => 'https://example.com/image.jpg',
+            // 👇 Menggunakan domain Unsplash agar lolos validasi Controller
+            'image' => 'https://images.unsplash.com/photo-test-image-123.jpg',
             '_token' => csrf_token(),
         ];
 
@@ -46,7 +47,7 @@ class AdminGalleryTest extends TestCase
         $response->assertRedirect(route('admin.galleries.index'));
         $this->assertDatabaseHas('galleries', [
             'title' => 'Test Gallery',
-            'image' => 'https://example.com/image.jpg',
+            'image' => 'https://images.unsplash.com/photo-test-image-123.jpg',
         ]);
     }
 
@@ -55,14 +56,18 @@ class AdminGalleryTest extends TestCase
         $gallery = Gallery::factory()->create();
         $data = [
             'title' => 'Updated Title',
-            'image' => 'https://example.com/updated.jpg',
+            // 👇 Menggunakan domain Unsplash agar lolos validasi Controller
+            'image' => 'https://images.unsplash.com/photo-updated-image-456.jpg',
             '_token' => csrf_token(),
         ];
 
         $response = $this->put(route('admin.galleries.update', $gallery), $data);
 
         $response->assertRedirect(route('admin.galleries.index'));
-        $this->assertDatabaseHas('galleries', ['title' => 'Updated Title', 'image' => 'https://example.com/updated.jpg']);
+        $this->assertDatabaseHas('galleries', [
+            'title' => 'Updated Title', 
+            'image' => 'https://images.unsplash.com/photo-updated-image-456.jpg'
+        ]);
     }
 
     public function test_destroy_deletes_gallery()
