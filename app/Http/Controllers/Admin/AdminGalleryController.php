@@ -1,79 +1,57 @@
 <?php
 
-namespace Tests\Feature;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Gallery;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Session;
-use Tests\TestCase;
+use Illuminate\Http\Request;
 
-class AdminGalleryTest extends TestCase
+class AdminGalleryController extends Controller
 {
-    use RefreshDatabase;
-
-    protected User $user;
-
-    protected function setUp(): void
+    public function index()
     {
-        parent::setUp();
-        $this->user = User::factory()->createOne(['role' => 'admin', 'email_verified_at' => now()]);
-        $this->actingAs($this->user);
-        Session::start();
-        session(['_token' => csrf_token()]);
+        $galleries = Gallery::latest()->paginate(10);
+        return view('admin.galleries.index', compact('galleries'));
     }
 
-    public function test_index_displays_galleries()
+    public function create()
     {
-        Gallery::factory()->count(3)->create();
-
-        $response = $this->get(route('admin.galleries.index'));
-
-        $response->assertStatus(200);
-        $response->assertViewHas('galleries');
+        return view('admin.galleries.create');
     }
 
-    public function test_store_creates_gallery()
+    public function store(Request $request)
     {
-        $data = [
-            'title' => 'Test Gallery',
-            'image' => 'https://images.unsplash.com/photo-1234567890.jpg',
-            '_token' => csrf_token(),
-        ];
-
-        $response = $this->post(route('admin.galleries.store'), $data);
-
-        $response->assertRedirect(route('admin.galleries.index'));
-        $this->assertDatabaseHas('galleries', [
-            'title' => 'Test Gallery',
-            'image' => 'https://images.unsplash.com/photo-1234567890.jpg',
-        ]);
-    }
-
-    public function test_update_modifies_gallery()
-    {
-        $gallery = Gallery::factory()->create();
-        $data = [
-            'title' => 'Updated Title',
-            'image' => 'https://plus.unsplash.com/photo-updated.jpg',
-            '_token' => csrf_token(),
-        ];
-
-        $response = $this->put(route('admin.galleries.update', $gallery), $data);
-
-        $response->assertRedirect(route('admin.galleries.index'));
-        $this->assertDatabaseHas('galleries', ['title' => 'Updated Title', 'image' => 'https://plus.unsplash.com/photo-updated.jpg']);
-    }
-
-    public function test_destroy_deletes_gallery()
-    {
-        $gallery = Gallery::factory()->create();
-
-        $response = $this->delete(route('admin.galleries.destroy', $gallery), [
-            '_token' => csrf_token(),
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'image' => 'required|string|url',
         ]);
 
-        $response->assertRedirect(route('admin.galleries.index'));
-        $this->assertDatabaseMissing('galleries', ['id' => $gallery->id]);
+        Gallery::create($validated);
+
+        return redirect()->route('admin.galleries.index');
+    }
+
+    public function edit(Gallery $gallery)
+    {
+        return view('admin.galleries.edit', compact('gallery'));
+    }
+
+    public function update(Request $request, Gallery $gallery)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'image' => 'required|string|url',
+        ]);
+
+        $gallery->update($validated);
+
+        return redirect()->route('admin.galleries.index');
+    }
+
+    public function destroy(Gallery $gallery)
+    {
+        $gallery->delete();
+
+        return redirect()->route('admin.galleries.index');
     }
 }
