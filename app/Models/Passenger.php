@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Passenger extends Model
 {
@@ -13,8 +14,15 @@ class Passenger extends Model
         'booking_id', 'name', 'email', 'phone', 'id_number', 'seat_number',
     ];
 
+    // ── Relations ────────────────────────────────────────────
+
     public function booking(): BelongsTo
     {
         return $this->belongsTo(Booking::class);
+    }
+
+    public function seatMap(): HasOne
+    {
+        return $this->hasOne(SeatMap::class);
     }
 }

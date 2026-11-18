@@ -12,7 +12,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Security logging + injection detection live in App\Exceptions\Handler.
+        // Binding it here (before anything resolves the contract) is the only
+        // place that wins: withExceptions() binds the framework default first,
+        // and Collision wraps whatever is bound.
+        $this->app->singleton(
+            \Illuminate\Contracts\Debug\ExceptionHandler::class,
+            \App\Exceptions\Handler::class,
+        );
     }
 
     /**

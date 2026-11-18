@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
@@ -11,20 +10,14 @@ class DashboardController extends Controller
 {
     public function __invoke(): View
     {
-        /** @var User $user */
         $user = Auth::user();
 
-        // Soft-delete filtering is handled automatically by the global scope
-        // on the Booking model — no need for manual whereNull('deleted_at').
-        $totalTrips = Booking::where('user_id', $user->id)
-            ->where('status', 'completed')
-            ->count();
-
+        $totalTrips    = Booking::where('user_id', $user->id)->count();
         $activeTickets = Booking::where('user_id', $user->id)
             ->whereIn('status', ['pending', 'confirmed'])
             ->count();
 
-        $recentBookings = Booking::with('destination')
+        $recentBookings = Booking::with(['schedule.bus', 'schedule.route'])
             ->where('user_id', $user->id)
             ->orderByDesc('created_at')
             ->take(5)

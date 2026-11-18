@@ -1,16 +1,20 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="container mx-auto px-4 py-16 text-center">
-    <div class="max-w-md mx-auto">
-        <h1 class="text-6xl font-bold text-gray-800 mb-4">404</h1>
-        <h2 class="text-2xl font-semibold text-gray-600 mb-8">Halaman Tidak Ditemukan</h2>
-        <p class="text-gray-500 mb-8">
-            Halaman yang Anda cari tidak ada atau telah dipindahkan.
-        </p>
-        <a href="{{ route('home') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Kembali ke Beranda
-        </a>
-    </div>
-</div>
+@section('title', '404 - Halaman Tidak Ditemukan | Raven Travel')
+
+@section('body')
+    @include('partials.navbar')
+
+    <section class="section-elegant" style="min-height:70vh; display:flex; align-items:center;">
+        <div class="container" style="text-align:center;">
+            <div style="font-size:80px; font-weight:700; color:#d4a017; font-family:'Cinzel',serif; line-height:1;">404</div>
+            <h2 style="margin:1rem 0 0.5rem; font-size:24px;">Halaman Tidak Ditemukan</h2>
+            <p style="color:#999; margin-bottom:2rem;">Halaman yang Anda cari tidak ada atau telah dipindahkan.</p>
+            <a href="{{ route('home') }}" class="btn btn-gold">
+                <i class="ri-home-line"></i> Kembali ke Beranda
+            </a>
+        </div>
+    </section>
+
+    @include('partials.footer')
 @endsection

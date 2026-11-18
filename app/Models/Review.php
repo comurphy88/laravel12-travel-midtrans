@@ -11,7 +11,7 @@ class Review extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'destination_id', 'booking_id', 'rating',
+        'user_id', 'booking_id', 'rating',
         'title', 'comment', 'status', 'reviewed_by', 'reviewed_at',
     ];
 
@@ -19,14 +19,11 @@ class Review extends Model
         'reviewed_at' => 'datetime',
     ];
 
+    // ── Relations ────────────────────────────────────────────
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function destination(): BelongsTo
-    {
-        return $this->belongsTo(Destination::class);
     }
 
     public function booking(): BelongsTo
@@ -37,5 +34,17 @@ class Review extends Model
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    // ── Scopes ────────────────────────────────────────────────
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
     }
 }

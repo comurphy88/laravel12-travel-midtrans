@@ -13,15 +13,21 @@
                         <div class="col-sm-4 fw-bold">Pengguna</div>
                         <div class="col-sm-8">{{ $review->user?->name ?? '-' }} ({{ $review->user?->email ?? '-' }})</div>
                     </div>
-                    <div class="row mb-2">
-                        <div class="col-sm-4 fw-bold">Destinasi</div>
-                        <div class="col-sm-8">{{ $review->destination?->name ?? '-' }}</div>
-                    </div>
                     @if($review->booking)
-                    <div class="row mb-2">
-                        <div class="col-sm-4 fw-bold">Pesanan</div>
-                        <div class="col-sm-8"><code>{{ $review->booking->booking_code }}</code></div>
-                    </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-bold">Pesanan</div>
+                            <div class="col-sm-8">
+                                <code>{{ $review->booking->booking_code }}</code>
+                                — {{ $review->booking->origin ?? '-' }} → {{ $review->booking->destination ?? '-' }}
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-bold">Bus</div>
+                            <div class="col-sm-8">
+                                {{ $review->booking->schedule?->bus?->bus_name ?? '-' }}
+                                ({{ $review->booking->travel_date?->format('d M Y') ?? '-' }})
+                            </div>
+                        </div>
                     @endif
                     <div class="row mb-2">
                         <div class="col-sm-4 fw-bold">Rating</div>
@@ -33,10 +39,10 @@
                         </div>
                     </div>
                     @if($review->title)
-                    <div class="row mb-2">
-                        <div class="col-sm-4 fw-bold">Judul</div>
-                        <div class="col-sm-8">{{ $review->title }}</div>
-                    </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-bold">Judul</div>
+                            <div class="col-sm-8">{{ $review->title }}</div>
+                        </div>
                     @endif
                     <div class="row mb-2">
                         <div class="col-sm-4 fw-bold">Komentar</div>
@@ -47,10 +53,12 @@
                         <div class="col-sm-8">{{ $review->created_at->format('d M Y H:i') }}</div>
                     </div>
                     @if($review->reviewer)
-                    <div class="row mb-2">
-                        <div class="col-sm-4 fw-bold">Direview Oleh</div>
-                        <div class="col-sm-8">{{ $review->reviewer->name }} pada {{ $review->reviewed_at?->format('d M Y H:i') }}</div>
-                    </div>
+                        <div class="row mb-2">
+                            <div class="col-sm-4 fw-bold">Direview Oleh</div>
+                            <div class="col-sm-8">
+                                {{ $review->reviewer->name }} pada {{ $review->reviewed_at?->format('d M Y H:i') }}
+                            </div>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -68,12 +76,16 @@
                                 @endforeach
                             </select>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-check-lg"></i> Simpan</button>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-lg"></i> Simpan
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <a href="{{ route('admin.reviews.index') }}" class="btn btn-secondary mt-3"><i class="bi bi-arrow-left"></i> Kembali</a>
+    <a href="{{ route('admin.reviews.index') }}" class="btn btn-secondary mt-3">
+        <i class="bi bi-arrow-left"></i> Kembali
+    </a>
 @endsection

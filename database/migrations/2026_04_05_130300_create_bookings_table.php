@@ -12,11 +12,17 @@ return new class extends Migration
             $table->id();
             $table->string('booking_code')->unique();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('bus_route_id')->nullable()->constrained('bus_routes')->nullOnDelete();
-            $table->foreignId('destination_id')->nullable()->constrained('destinations')->nullOnDelete();
+            $table->foreignId('schedule_id')->constrained('schedules')->cascadeOnDelete();
+            $table->foreignId('route_id')->constrained('routes')->cascadeOnDelete();
             $table->foreignId('promo_code_id')->nullable()->constrained('promo_codes')->nullOnDelete();
+            $table->foreignId('cancellation_policy_id')->nullable()->constrained('cancellation_policies')->nullOnDelete();
+            $table->string('origin');
+            $table->string('destination');
+            $table->unsignedInteger('distance_km');
+            $table->decimal('price_per_km', 10, 2)->default(0);
             $table->unsignedInteger('num_passengers')->default(1);
             $table->date('travel_date');
+            $table->time('departure_time');
             $table->decimal('subtotal', 12, 2)->default(0);
             $table->decimal('discount_amount', 12, 2)->default(0);
             $table->decimal('total_price', 12, 2)->default(0);
@@ -29,6 +35,10 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index('status');
+            $table->index('payment_status');
+            $table->index('travel_date');
         });
     }
 

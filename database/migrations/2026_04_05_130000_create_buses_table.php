@@ -13,8 +13,7 @@ return new class extends Migration
             $table->string('bus_name');
             $table->string('bus_number')->unique();
             $table->unsignedInteger('capacity');
-            $table->string('bus_type', 50)->default('standard');
-            $table->text('facilities')->nullable();
+            $table->decimal('price_per_km', 10, 2)->default(0);
             $table->enum('status', ['active', 'maintenance', 'retired'])->default('active');
             $table->timestamps();
             $table->softDeletes();

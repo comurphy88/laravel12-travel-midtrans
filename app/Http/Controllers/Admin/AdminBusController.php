@@ -5,102 +5,84 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Bus;
-use App\Models\BusRoute;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class AdminBusRouteController extends Controller
+class AdminBusController extends Controller
 {
-    /** @return array<string, string> */
     private function rules(): array
     {
         return [
-            'route_name'     => 'required|string|max:255',
-            'origin'         => 'required|string|max:255',
-            'destination'    => 'required|string|max:255',
-            'distance'       => 'nullable|string|max:50',
-            'duration'       => 'nullable|string|max:50',
-            'price'          => 'required|numeric|min:0',
-            'bus_id'         => 'required|exists:buses,id',
-            'departure_time' => 'nullable|date_format:H:i',
-            'arrival_time'   => 'nullable|date_format:H:i|after:departure_time',
-            'active'         => 'boolean',
+            'bus_name'     => 'required|string|max:255',
+            'bus_number'   => 'required|string|max:255',
+            'capacity'     => 'required|integer|min:1',
+            'price_per_km' => 'required|numeric|min:0',
+            'status'       => 'required|in:active,maintenance,retired',
         ];
-    }
-
-    private function activeBuses()
-    {
-        return Bus::where('status', 'active')->orderBy('bus_name')->get();
     }
 
     public function index(Request $request): View
     {
-        $query = BusRoute::with('bus');
+        $query = Bus::withCount('schedules');
 
         if ($request->filled('search')) {
             $term = $request->string('search')->trim()->toString();
             $query->where(function ($q) use ($term): void {
-                $q->where('route_name',   'like', "%{$term}%")
-                  ->orWhere('origin',      'like', "%{$term}%")
-                  ->orWhere('destination', 'like', "%{$term}%");
+                $q->where('bus_name',   'like', "%{$term}%")
+                    ->orWhere('bus_number', 'like', "%{$term}%");
             });
         }
 
-        $routes = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
+        $buses = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
 
-        return view('admin.bus-routes.index', compact('routes'));
+        return view('admin.buses.index', compact('buses'));
     }
 
     public function create(): View
     {
-        $buses = $this->activeBuses();
-
-        return view('admin.bus-routes.form', compact('buses'));
+        return view('admin.buses.form');
     }
 
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate($this->rules());
-        $validated['active'] = $request->boolean('active');
+        $bus = Bus::create($validated);
 
-        $route = BusRoute::create($validated);
+        ActivityLog::log('create', "Menambah bus: {$bus->bus_name}", 'buses', $bus->id);
 
-        ActivityLog::log('create', "Menambah rute: {$route->route_name}", 'bus_routes', $route->id);
-
-        return redirect()->route('admin.bus-routes.index')->with('success', 'Rute berhasil ditambahkan.');
+        return redirect()->route('admin.buses.index')->with('success', 'Bus berhasil ditambahkan.');
     }
 
-    public function edit(BusRoute $busRoute): View
+    public function edit(Bus $bus): View
     {
-        $buses = $this->activeBuses();
-
-        return view('admin.bus-routes.form', compact('busRoute', 'buses'));
+        return view('admin.buses.form', compact('bus'));
     }
 
-    public function update(Request $request, BusRoute $busRoute): RedirectResponse
+    public function update(Request $request, Bus $bus): RedirectResponse
     {
         $validated = $request->validate($this->rules());
-        $validated['active'] = $request->boolean('active');
+        $bus->update($validated);
 
-        $busRoute->update($validated);
+        ActivityLog::log('update', "Mengubah bus: {$bus->bus_name}", 'buses', $bus->id);
 
-        ActivityLog::log('update', "Mengubah rute: {$busRoute->route_name}", 'bus_routes', $busRoute->id);
-
-        return redirect()->route('admin.bus-routes.index')->with('success', 'Rute berhasil diperbarui.');
+        return redirect()->route('admin.buses.index')->with('success', 'Bus berhasil diperbarui.');
     }
 
-    public function destroy(BusRoute $busRoute): RedirectResponse
+    public function destroy(Bus $bus): RedirectResponse
     {
-        if ($busRoute->bookings()->exists()) {
+        if ($bus->schedules()->exists()) {
             return redirect()
-                ->route('admin.bus-routes.index')
-                ->with('error', 'Rute tidak bisa dihapus karena masih memiliki pesanan terkait.');
+                ->route('admin.buses.index')
+                ->with('error', 'Bus tidak bisa dihapus karena masih memiliki jadwal terkait.');
         }
 
-        ActivityLog::log('delete', "Menghapus rute: {$busRoute->route_name}", 'bus_routes', $busRoute->id);
-        $busRoute->delete();
+        $busId   = $bus->id;
+        $busName = $bus->bus_name;
+        $bus->delete();
 
-        return redirect()->route('admin.bus-routes.index')->with('success', 'Rute berhasil dihapus.');
+        ActivityLog::log('delete', "Menghapus bus: {$busName}", 'buses', $busId);
+
+        return redirect()->route('admin.buses.index')->with('success', 'Bus berhasil dihapus.');
     }
 }

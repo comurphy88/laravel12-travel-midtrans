@@ -5,40 +5,45 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\Booking;
+use App\Models\SeatMap;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class AdminBookingController extends Controller
 {
-    /**
-     * Allowed status transitions.
-     *
-     * @var array<string, array<string>>
-     */
-    private const STATUS_TRANSITIONS = [
-        'pending'   => ['confirmed', 'cancelled'],
-        'confirmed' => ['completed', 'cancelled'],
-        'completed' => [],
-        'cancelled' => [],
-    ];
-
     public function index(Request $request): View
     {
-        $query = Booking::with(['user', 'busRoute', 'destination']);
+        $query = Booking::with(['user', 'schedule.bus', 'schedule.route']);
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->string('status'));
+        if ($request->filled('search')) {
+            $term = $request->string('search')->trim()->toString();
+            $query->where(function ($q) use ($term) {
+                $q->where('booking_code', 'like', "%{$term}%")
+                    ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$term}%")
+                        ->orWhere('email', 'like', "%{$term}%"))
+                    ->orWhere('origin', 'like', "%{$term}%")
+                    ->orWhere('destination', 'like', "%{$term}%");
+            });
         }
 
-        $bookings = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', $request->payment_status);
+        }
+
+        $bookings = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
 
         return view('admin.bookings.index', compact('bookings'));
     }
 
     public function show(Booking $booking): View
     {
-        $booking->load(['user', 'busRoute.bus', 'destination', 'passengers', 'payments']);
+        $booking->load(['user', 'schedule.bus', 'schedule.route', 'passengers', 'payments', 'cancellationPolicy']);
 
         return view('admin.bookings.show', compact('booking'));
     }
@@ -49,27 +54,23 @@ class AdminBookingController extends Controller
             'status' => 'required|in:pending,confirmed,completed,cancelled',
         ]);
 
-        $newStatus     = $validated['status'];
-        $currentStatus = $booking->status;
+        $old = $booking->status;
 
-        $allowed = self::STATUS_TRANSITIONS[$currentStatus] ?? [];
+        DB::transaction(function () use ($booking, $validated, $old) {
+            $booking->update(['status' => $validated['status']]);
 
-        if (! in_array($newStatus, $allowed, strict: true)) {
-            return back()->with('error', "Tidak dapat mengubah status dari {$currentStatus} ke {$newStatus}.");
-        }
+            // Jika dibatalkan admin, bebaskan kursi dan kembalikan kuota promo
+            if ($validated['status'] === 'cancelled' && $old !== 'cancelled') {
+                $booking->release();
+            }
 
-        if ($newStatus === 'confirmed' && $booking->payment_status === 'unpaid') {
-            return back()->with('error', 'Booking tidak dapat dikonfirmasi karena pembayaran belum diterima.');
-        }
-
-        $booking->update($validated);
-
-        ActivityLog::log(
-            'update',
-            "Mengubah status booking {$booking->booking_code}: {$currentStatus} → {$newStatus}",
-            'bookings',
-            $booking->id
-        );
+            ActivityLog::log(
+                'update',
+                "Admin mengubah status booking #{$booking->booking_code}: {$old} → {$validated['status']}",
+                'bookings',
+                $booking->id
+            );
+        });
 
         return back()->with('success', 'Status booking berhasil diperbarui.');
     }
