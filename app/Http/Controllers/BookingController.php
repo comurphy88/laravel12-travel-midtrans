@@ -105,8 +105,15 @@ class BookingController extends Controller
 
             if ($promo && $subtotal >= $promo->min_purchase) {
                 $promoCodeId    = $promo->id;
+                $maxDiscount    = (float) $promo->max_discount;
                 $discountAmount = $promo->discount_type === 'percentage'
-                    ? min($subtotal * ($promo->discount_value / 100), $promo->max_discount ?: PHP_INT_MAX)
+                    // max_discount = 0 means "no cap". The decimal cast returns
+                    // the string "0.00", which is truthy, so a plain `?:` would
+                    // cap every discount at zero.
+                    ? min(
+                        $subtotal * ((float) $promo->discount_value / 100),
+                        $maxDiscount > 0 ? $maxDiscount : PHP_INT_MAX,
+                    )
                     : (float) $promo->discount_value;
 
                 // Conditional increment: returns 0 if another request won the last slot.

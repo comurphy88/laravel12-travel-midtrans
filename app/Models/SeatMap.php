@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -19,6 +20,23 @@ class SeatMap extends Model
     protected $casts = [
         'travel_date' => 'date',
     ];
+
+    /**
+     * Always persist travel_date as a plain Y-m-d string.
+     *
+     * Without this, Eloquent serialises the 'date' cast as "Y-m-d H:i:s",
+     * which does not match the date column and breaks the unique
+     * (schedule_id, travel_date, seat_number) index as well as every
+     * where('travel_date', ...) lookup.
+     */
+    protected function travelDate(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => $value instanceof \DateTimeInterface
+                ? $value->format('Y-m-d')
+                : (is_string($value) ? substr($value, 0, 10) : $value),
+        );
+    }
 
     // ── Relations ────────────────────────────────────────────
 
