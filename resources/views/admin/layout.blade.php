@@ -11,10 +11,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Lato', sans-serif; 
-            background-color: #faf8f3;
-        }
+        body { font-family: 'Lato', sans-serif; background-color: #faf8f3; }
 
         .admin-main {
             margin-left: 240px;
@@ -23,11 +20,14 @@
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
+            flex: 1;
+            min-width: 0;
+            max-height: 100vh;
+            overflow-y: auto;
+            width: calc(100% - 240px);
         }
 
-        .admin-main > * {
-            width: 100%;
-        }
+        .admin-main > * { width: 100%; }
 
         .admin-sidebar {
             min-height: 100vh;
@@ -37,17 +37,17 @@
             flex-direction: column;
             width: 240px;
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             z-index: 100;
+            overflow-y: auto;
         }
 
         .admin-sidebar .nav-link {
             color: rgba(255,255,255,.75);
-            padding: .6rem 1rem;
+            padding: .5rem 1rem;
             border-radius: 10px;
             margin: 2px 6px;
-            font-size: .9rem;
+            font-size: .85rem;
             transition: all .2s;
         }
 
@@ -58,13 +58,12 @@
         }
 
         .admin-sidebar .nav-link i { margin-right: .5rem; }
-
         .admin-sidebar .nav-wrap { flex: 1; }
 
         .admin-page .card {
             border-radius: 14px;
             border: 1px solid #e7ddd0;
-            box-shadow: 0 8px 20px rgba(26, 26, 46, 0.06);
+            box-shadow: 0 8px 20px rgba(26,26,46,0.06);
             background-color: #fff;
         }
 
@@ -76,10 +75,7 @@
             color: #1a1a2e;
         }
 
-        .admin-page .table {
-            font-size: .9rem;
-            margin-bottom: 0;
-        }
+        .admin-page .table { font-size: .9rem; margin-bottom: 0; }
 
         .admin-page .table thead th {
             background-color: #f5f1e8;
@@ -93,15 +89,7 @@
             font-weight: 600;
         }
 
-        .admin-page .table td {
-            vertical-align: middle;
-            font-size: .85rem;
-            padding: 0.75rem;
-        }
-
-        .admin-page .table-sm td {
-            padding: 0.6rem 0.75rem;
-        }
+        .admin-page .table td { vertical-align: middle; font-size: .85rem; padding: 0.75rem; }
 
         .admin-page .btn-primary {
             background: linear-gradient(135deg, #d4af37, #b8941f);
@@ -112,36 +100,7 @@
 
         .admin-page .btn-primary:hover {
             color: #1a1a2e;
-            box-shadow: 0 8px 16px rgba(212, 175, 55, 0.25);
-        }
-
-        .stat-card {
-            background-color: #fff;
-            border: 1px solid #e7ddd0;
-            border-left: 4px solid #d4af37;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            padding: 1rem !important;
-        }
-
-        .stat-card:hover {
-            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .stat-card h3 {
-            color: #1a1a2e;
-            font-family: 'Cinzel', serif;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-            font-size: 1.8rem;
-        }
-
-        .stat-card h6 {
-            color: #9f7c39;
-            font-size: .75rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+            box-shadow: 0 8px 16px rgba(212,175,55,0.25);
         }
 
         .admin-badge {
@@ -154,9 +113,9 @@
         }
 
         .admin-badge.success { background: rgba(46,160,67,.12); color: #1a7f37; }
-        .admin-badge.danger { background: rgba(220,53,69,.12); color: #cf222e; }
-        .admin-badge.warning { background: rgba(255,193,7,.15); color: #856404; }
-        .admin-badge.gold { background: rgba(212,175,55,.15); color: #9f7c39; }
+        .admin-badge.danger  { background: rgba(220,53,69,.12);  color: #cf222e; }
+        .admin-badge.warning { background: rgba(255,193,7,.15);  color: #856404; }
+        .admin-badge.gold    { background: rgba(212,175,55,.15); color: #9f7c39; }
         .admin-badge.neutral { background: rgba(100,100,100,.1); color: #666; }
 
         .admin-topbar {
@@ -180,25 +139,9 @@
             color: #1a1a2e;
         }
 
-        .modal-content { 
-            border-radius: 14px;
-            background-color: #fff;
-            border: 1px solid #e7ddd0;
-        }
-        
-        .modal-header { 
-            border-bottom: 1px solid #e7ddd0;
-            background-color: #fff;
-        }
-        
-        .modal-footer { 
-            border-top: 1px solid #e7ddd0;
-            background-color: transparent;
-        }
-
-        .form-label { 
-            font-weight: 600; 
-            font-size: .85rem; 
+        .form-label {
+            font-weight: 600;
+            font-size: .85rem;
             color: #2a241d;
             font-family: 'Cinzel', serif;
         }
@@ -208,17 +151,12 @@
             box-shadow: 0 0 0 .2rem rgba(212,175,55,.15) !important;
         }
 
-        .form-control, .form-select {
-            border-color: #e7ddd0;
-            border-radius: 8px;
-        }
+        .form-control, .form-select { border-color: #e7ddd0; border-radius: 8px; }
 
         @media (max-width: 768px) {
             .admin-sidebar { display: none; }
-            .admin-main { margin-left: 0; padding: 1rem; }
+            .admin-main { margin-left: 0; padding: 1rem; width: 100%; }
         }
-
-        .admin-main { max-height: 100vh; overflow-y: auto; }
     </style>
     @yield('styles')
 </head>
@@ -232,55 +170,88 @@
             </div>
             <div class="nav-wrap">
                 <nav class="nav flex-column p-2">
-                    <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                       href="{{ route('admin.dashboard') }}">
                         <i class="bi bi-speedometer2"></i> Dasbor
                     </a>
-                    <a class="nav-link {{ request()->routeIs('admin.destinations.*') ? 'active' : '' }}" href="{{ route('admin.destinations.index') }}">
-                        <i class="bi bi-geo-alt"></i> Destinasi
+
+                    <hr class="border-secondary my-1">
+                    <small class="text-white-50 px-3 py-1" style="font-size:10px; letter-spacing:.05em; text-transform:uppercase;">Armada</small>
+
+                    <a class="nav-link {{ request()->routeIs('admin.buses.*') ? 'active' : '' }}"
+                       href="{{ route('admin.buses.index') }}">
+                        <i class="bi bi-bus-front"></i> Bus
                     </a>
-                    <a class="nav-link {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}" href="{{ route('admin.bookings.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.routes.*') ? 'active' : '' }}"
+                       href="{{ route('admin.routes.index') }}">
+                        <i class="bi bi-signpost-2"></i> Rute
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('admin.schedules.*') ? 'active' : '' }}"
+                       href="{{ route('admin.schedules.index') }}">
+                        <i class="bi bi-calendar-week"></i> Jadwal
+                    </a>
+
+                    <hr class="border-secondary my-1">
+                    <small class="text-white-50 px-3 py-1" style="font-size:10px; letter-spacing:.05em; text-transform:uppercase;">Transaksi</small>
+
+                    <a class="nav-link {{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}"
+                       href="{{ route('admin.bookings.index') }}">
                         <i class="bi bi-ticket-perforated"></i> Pesanan
                     </a>
-                    <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
+                       href="{{ route('admin.users.index') }}">
                         <i class="bi bi-people"></i> Pengguna
                     </a>
-
-                    <hr class="border-secondary my-2">
-
-                    <a class="nav-link {{ request()->routeIs('admin.galleries.*') ? 'active' : '' }}" href="{{ route('admin.galleries.index') }}">
-                        <i class="bi bi-images"></i> Galeri
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}" href="{{ route('admin.testimonials.index') }}">
-                        <i class="bi bi-chat-quote"></i> Testimoni
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}" href="{{ route('admin.reviews.index') }}">
-                        <i class="bi bi-star"></i> Review
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('admin.promo-codes.*') ? 'active' : '' }}" href="{{ route('admin.promo-codes.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.promo-codes.*') ? 'active' : '' }}"
+                       href="{{ route('admin.promo-codes.index') }}">
                         <i class="bi bi-tag"></i> Kode Promo
                     </a>
-                    <a class="nav-link {{ request()->routeIs('admin.cancellation-policies.*') ? 'active' : '' }}" href="{{ route('admin.cancellation-policies.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.cancellation-policies.*') ? 'active' : '' }}"
+                       href="{{ route('admin.cancellation-policies.index') }}">
                         <i class="bi bi-x-circle"></i> Kebijakan Batal
                     </a>
 
-                    <hr class="border-secondary my-2">
+                    <hr class="border-secondary my-1">
+                    <small class="text-white-50 px-3 py-1" style="font-size:10px; letter-spacing:.05em; text-transform:uppercase;">Konten</small>
 
-                    <a class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}" href="{{ route('admin.notifications.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.galleries.*') ? 'active' : '' }}"
+                       href="{{ route('admin.galleries.index') }}">
+                        <i class="bi bi-images"></i> Galeri
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}"
+                       href="{{ route('admin.testimonials.index') }}">
+                        <i class="bi bi-chat-quote"></i> Testimoni
+                    </a>
+                    <a class="nav-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}"
+                       href="{{ route('admin.reviews.index') }}">
+                        <i class="bi bi-star"></i> Review
+                    </a>
+
+                    <hr class="border-secondary my-1">
+                    <small class="text-white-50 px-3 py-1" style="font-size:10px; letter-spacing:.05em; text-transform:uppercase;">Sistem</small>
+
+                    <a class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}"
+                       href="{{ route('admin.notifications.index') }}">
                         <i class="bi bi-bell"></i> Notifikasi
                     </a>
-                    <a class="nav-link {{ request()->routeIs('admin.email-logs.*') ? 'active' : '' }}" href="{{ route('admin.email-logs.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.email-logs.*') ? 'active' : '' }}"
+                       href="{{ route('admin.email-logs.index') }}">
                         <i class="bi bi-envelope"></i> Log Email
                     </a>
-                    <a class="nav-link {{ request()->routeIs('admin.logs') ? 'active' : '' }}" href="{{ route('admin.logs') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.logs') ? 'active' : '' }}"
+                       href="{{ route('admin.logs') }}">
                         <i class="bi bi-journal-text"></i> Log Aktivitas
                     </a>
-                    <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
+                    <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"
+                       href="{{ route('admin.settings.index') }}">
                         <i class="bi bi-gear"></i> Pengaturan
                     </a>
                 </nav>
             </div>
             <div class="p-3 border-top border-secondary">
-                <a href="{{ url('/') }}" class="text-white-50 small text-decoration-none"><i class="bi bi-box-arrow-left"></i> Kembali ke Situs</a>
+                <a href="{{ url('/') }}" class="text-white-50 small text-decoration-none">
+                    <i class="bi bi-box-arrow-left"></i> Kembali ke Situs
+                </a>
             </div>
         </aside>
 

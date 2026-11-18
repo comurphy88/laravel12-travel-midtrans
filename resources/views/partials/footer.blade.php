@@ -26,7 +26,7 @@
                     <h4>Tautan Cepat</h4>
                     <ul class="footer-links">
                         <li><a href="{{ url('/') }}">Beranda</a></li>
-                        <li><a href="{{ route('destinations.index') }}">Destinasi</a></li>
+                        <li><a href="{{ route('bookings.create') }}">Tiket Bus</a></li>
                         <li><a href="{{ url('/') }}#gallery">Galeri</a></li>
                     </ul>
                 </div>

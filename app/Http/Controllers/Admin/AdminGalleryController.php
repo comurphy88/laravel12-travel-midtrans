@@ -16,7 +16,7 @@ class AdminGalleryController extends Controller
 
     public function create()
     {
-        return view('admin.galleries.create');
+        return view('admin.galleries.form');
     }
 
     public function store(Request $request)
@@ -33,7 +33,7 @@ class AdminGalleryController extends Controller
 
     public function edit(Gallery $gallery)
     {
-        return view('admin.galleries.edit', compact('gallery'));
+        return view('admin.galleries.form', compact('gallery'));
     }
 
     public function update(Request $request, Gallery $gallery)

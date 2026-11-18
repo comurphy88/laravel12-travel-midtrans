@@ -14,7 +14,7 @@ class AdminReviewController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Review::with(['user', 'destination', 'booking'])->orderByDesc('created_at');
+        $query = Review::with(['user', 'booking'])->orderByDesc('created_at');
 
         if ($request->filled('status')) {
             $query->where('status', $request->string('status'));
@@ -27,7 +27,7 @@ class AdminReviewController extends Controller
 
     public function show(Review $review): View
     {
-        $review->load(['user', 'destination', 'booking', 'reviewer']);
+        $review->load(['user', 'booking.schedule.bus', 'booking.schedule.route', 'reviewer']);
 
         return view('admin.reviews.show', compact('review'));
     }

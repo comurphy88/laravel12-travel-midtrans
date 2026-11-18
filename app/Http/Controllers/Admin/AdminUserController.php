@@ -21,7 +21,7 @@ class AdminUserController extends Controller
             : 'unique:users,email';
 
         return [
-            'name'  => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+            'name'  => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s\-\']+$/'],
             'email' => "required|email|max:255|{$emailUnique}",
             'role'  => 'required|in:user,admin',
             'phone' => 'nullable|string|max:20|regex:/^[0-9+\-\s()]+$/',
@@ -79,6 +79,13 @@ class AdminUserController extends Controller
     {
         $validated = $request->validate($this->rules($user->id));
 
+        // Demoting the last admin locks everyone out of the admin panel.
+        if ($user->isAdmin() && $validated['role'] !== 'admin' && $this->isLastAdmin($user)) {
+            return back()->withInput()->withErrors([
+                'role' => 'Tidak dapat menurunkan admin terakhir.',
+            ]);
+        }
+
         $user->fill([
             'name'  => $validated['name'],
             'email' => $validated['email'],
@@ -104,9 +111,18 @@ class AdminUserController extends Controller
             return back()->with('error', 'Tidak dapat menghapus akun sendiri.');
         }
 
+        if ($user->isAdmin() && $this->isLastAdmin($user)) {
+            return back()->with('error', 'Tidak dapat menghapus admin terakhir.');
+        }
+
         ActivityLog::log('delete', "Menghapus user: {$user->name} ({$user->email})", 'users', $user->id);
         $user->delete();
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
+    }
+
+    private function isLastAdmin(User $user): bool
+    {
+        return User::where('role', 'admin')->whereKeyNot($user->id)->doesntExist();
     }
 }

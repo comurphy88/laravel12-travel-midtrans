@@ -16,10 +16,14 @@ return new class extends Migration
             $table->string('transaction_id')->nullable();
             $table->enum('status', ['pending', 'success', 'failed', 'refunded'])->default('pending');
             $table->string('payment_proof')->nullable();
+            $table->timestamp('expired_at')->nullable();
             $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('verified_at')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
+
+            $table->index('status');
+            $table->index('expired_at');
         });
     }
 

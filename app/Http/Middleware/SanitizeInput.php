@@ -36,7 +36,13 @@ class SanitizeInput
     public function handle(Request $request, Closure $next): Response
     {
         if (in_array($request->method(), self::SANITIZED_METHODS, strict: true)) {
-            $request->merge($this->sanitizeArray($request->all()));
+            // Only merge keys that came from the query/body bags. Passing
+            // $request->all() would inject an empty 'json' bag and wipe
+            // application/json request payloads.
+            $request->merge($this->sanitizeArray(array_merge(
+                $request->query->all(),
+                $request->request->all(),
+            )));
         }
 
         return $next($request);

@@ -78,7 +78,10 @@ class SecurityHeaders
         $response = $next($request);
 
         $response->headers->set('Content-Security-Policy',       $this->buildCsp());
-        $response->headers->set('Strict-Transport-Security',     'max-age=31536000; includeSubDomains; preload');
+        // HSTS on a plain-HTTP response would pin localhost/dev to HTTPS forever.
+        if ($request->isSecure()) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+        }
         $response->headers->set('X-Frame-Options',               'SAMEORIGIN');
         $response->headers->set('X-Content-Type-Options',        'nosniff');
         $response->headers->set('Referrer-Policy',               'strict-origin-when-cross-origin');

@@ -23,7 +23,7 @@
                     <tr>
                         <th>#</th>
                         <th>Pengguna</th>
-                        <th>Destinasi</th>
+                        <th>Rute</th>
                         <th>Rating</th>
                         <th>Komentar</th>
                         <th>Status</th>
@@ -36,7 +36,13 @@
                         <tr>
                             <td>{{ $review->id }}</td>
                             <td>{{ $review->user?->name ?? '-' }}</td>
-                            <td>{{ $review->destination?->name ?? '-' }}</td>
+                            <td style="white-space:nowrap;">
+                                @if($review->booking)
+                                    {{ $review->booking->origin ?? '-' }} → {{ $review->booking->destination ?? '-' }}
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td>
                                 @for($i = 1; $i <= 5; $i++)
                                     <i class="bi bi-star{{ $i <= $review->rating ? '-fill text-warning' : '' }}" style="font-size:.8rem;"></i>
@@ -55,8 +61,11 @@
                             </td>
                             <td>{{ $review->created_at->format('d M Y') }}</td>
                             <td>
-                                <a href="{{ route('admin.reviews.show', $review) }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></a>
-                                <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus review ini?')">
+                                <a href="{{ route('admin.reviews.show', $review) }}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" class="d-inline"
+                                      onsubmit="return confirm('Yakin ingin menghapus review ini?')">
                                     @csrf @method('DELETE')
                                     <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
                                 </form>

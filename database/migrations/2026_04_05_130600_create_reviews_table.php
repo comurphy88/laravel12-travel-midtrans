@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('destination_id')->constrained('destinations')->cascadeOnDelete();
             $table->foreignId('booking_id')->nullable()->constrained('bookings')->nullOnDelete();
             $table->unsignedTinyInteger('rating');
             $table->string('title')->nullable();
@@ -21,6 +20,8 @@ return new class extends Migration
             $table->timestamp('reviewed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index('user_id');
         });
     }
 

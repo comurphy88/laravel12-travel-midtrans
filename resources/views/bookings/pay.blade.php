@@ -1,26 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Pembayaran - ' . $booking->booking_code . ' | Raven Travel')
+@section('title', 'Pembayaran #' . $booking->booking_code . ' | Raven Travel')
 
 @push('styles')
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <style>
-        .pay-container { max-width: 640px; margin: 0 auto; }
-        .pay-card { background: var(--card-bg, rgba(255,255,255,0.04)); border: 1px solid var(--border-color, rgba(255,255,255,0.08)); border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; }
-        .pay-card h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
-        .pay-summary { display: flex; flex-direction: column; gap: 0.75rem; }
-        .pay-row { display: flex; justify-content: space-between; align-items: center; padding: 0.35rem 0; color: var(--text-muted, rgba(255,255,255,0.65)); font-size: 0.95rem; }
-        .pay-row strong { color: var(--text-light, #fff); }
-        .pay-divider { border: none; border-top: 1px solid var(--border-color, rgba(255,255,255,0.08)); margin: 0.5rem 0; }
-        .pay-total { font-size: 1.15rem; font-weight: 700; }
-        .pay-total strong { color: var(--gold); font-size: 1.35rem; }
-        .btn-pay { display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 1rem; font-size: 1.1rem; font-weight: 600; color: #0A0E1A; background: linear-gradient(135deg, var(--gold), #e2c15d); border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s; font-family: 'Lato', sans-serif; }
-        .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212,175,55,0.35); }
-        .btn-pay:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
-        .pay-secure { text-align: center; margin-top: 1rem; color: var(--text-muted, rgba(255,255,255,0.5)); font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
-        .pay-back { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text-muted); text-decoration: none; margin-bottom: 1.5rem; transition: color 0.2s; }
-        .pay-back:hover { color: var(--gold); }
-    </style>
 @endpush
 
 @section('body')
@@ -30,75 +13,131 @@
         <div class="page-header__overlay"></div>
         <div class="page-header__content" data-aos="fade-up">
             <span class="hero__badge"><i class="ri-secure-payment-line"></i> Pembayaran</span>
-            <h1>Selesaikan Pembayaran</h1>
+            <h1>Selesaikan <span class="text-gold">Pembayaran</span></h1>
         </div>
     </section>
 
     <section class="section-elegant">
         <div class="container">
-            <div class="pay-container">
-                <a href="{{ route('bookings.show', $booking) }}" class="pay-back" data-aos="fade-right">
-                    <i class="ri-arrow-left-line"></i> Kembali ke Detail Booking
-                </a>
+            <a href="{{ route('bookings.show', $booking) }}" class="detail-back" data-aos="fade-right">
+                <i class="ri-arrow-left-line"></i> Kembali ke Detail Booking
+            </a>
 
-                {{-- Order Summary --}}
-                <div class="pay-card" data-aos="fade-up">
-                    <h2><i class="ri-file-list-3-line"></i> Ringkasan Pesanan</h2>
-                    <div class="pay-summary">
-                        <div class="pay-row">
-                            <span>Kode Booking</span>
-                            <strong>{{ $booking->booking_code }}</strong>
+            @if(session('success'))
+                <div class="alert alert-success" data-aos="fade-up">
+                    <i class="ri-check-line"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger" data-aos="fade-up">
+                    <i class="ri-error-warning-line"></i> {{ session('error') }}
+                </div>
+            @endif
+
+            @php
+                $bus = $booking->schedule?->bus;
+            @endphp
+
+            <div class="detail-grid" data-aos="fade-up">
+                <div class="detail-main">
+
+                    {{-- Booking Summary --}}
+                    <div class="detail-card">
+                        <h2><i class="ri-file-list-3-line"></i> Ringkasan Pesanan</h2>
+
+                        {{-- Rute --}}
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:1rem; padding:12px; background:#f9f7f0; border-radius:8px;">
+                            <i class="ri-map-pin-line" style="color:#d4a017; font-size:18px;"></i>
+                            <span style="font-weight:500;">{{ $booking->origin ?? '-' }}</span>
+                            <i class="ri-arrow-right-line" style="color:#d4a017;"></i>
+                            <span style="font-weight:500;">{{ $booking->destination ?? '-' }}</span>
+                            @if($booking->distance_km)
+                                <span style="font-size:12px; color:#999; margin-left:4px;">· {{ $booking->distance_km }} km</span>
+                            @endif
                         </div>
-                        <div class="pay-row">
-                            <span>Perjalanan</span>
-                            <strong>
-                                @if($booking->busRoute)
-                                    {{ $booking->busRoute->route_name }}
-                                @elseif($booking->destination)
-                                    {{ $booking->destination->name }}
-                                @endif
-                            </strong>
-                        </div>
-                        <div class="pay-row">
-                            <span>Tanggal</span>
-                            <strong>{{ \Carbon\Carbon::parse($booking->travel_date)->format('d F Y') }}</strong>
-                        </div>
-                        <div class="pay-row">
-                            <span>Penumpang</span>
-                            <strong>{{ $booking->num_passengers }} orang</strong>
-                        </div>
-                        <hr class="pay-divider">
-                        @php $unitPrice = $booking->num_passengers > 0 ? $booking->total_price / $booking->num_passengers : 0; @endphp
-                        <div class="pay-row">
-                            <span>Harga per orang</span>
-                            <strong>IDR {{ number_format($unitPrice, 0, ',', '.') }}</strong>
-                        </div>
-                        <div class="pay-row">
-                            <span>Jumlah</span>
-                            <strong>&times; {{ $booking->num_passengers }}</strong>
-                        </div>
-                        @if($booking->discount_amount > 0)
-                            <div class="pay-row">
-                                <span>Diskon</span>
-                                <strong style="color: #4ade80;">- IDR {{ number_format($booking->discount_amount, 0, ',', '.') }}</strong>
+
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Kode Booking</span>
+                                <span class="info-value info-value--code">{{ $booking->booking_code }}</span>
                             </div>
-                        @endif
-                        <hr class="pay-divider">
-                        <div class="pay-row pay-total">
-                            <span>Total Pembayaran</span>
-                            <strong>IDR {{ number_format($booking->total_price, 0, ',', '.') }}</strong>
+                            <div class="info-item">
+                                <span class="info-label">Bus</span>
+                                <span class="info-value">
+                                    {{ $bus?->bus_name ?? '-' }}
+                                </span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Tanggal Perjalanan</span>
+                                <span class="info-value">{{ $booking->travel_date->format('d F Y') }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Jam Berangkat</span>
+                                <span class="info-value">{{ $booking->departure_time ? substr($booking->departure_time, 0, 5) . ' WIB' : '-' }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Jumlah Penumpang</span>
+                                <span class="info-value">{{ $booking->num_passengers }} orang</span>
+                            </div>
                         </div>
                     </div>
+
+                    {{-- Payment Button --}}
+                    <div class="detail-card">
+                        <h2><i class="ri-secure-payment-line"></i> Metode Pembayaran</h2>
+                        <p style="color:#666; font-size:14px; margin-bottom:1.5rem;">
+                            Klik tombol di bawah untuk melanjutkan ke halaman pembayaran Midtrans.
+                            Anda dapat memilih berbagai metode pembayaran yang tersedia.
+                        </p>
+
+                        @if($booking->payment_status === 'paid')
+                            <div class="alert alert-success">
+                                <i class="ri-check-double-line"></i> Pembayaran sudah selesai.
+                            </div>
+                        @else
+                            <button id="pay-button" class="btn btn-gold btn-full btn-lg">
+                                <i class="ri-secure-payment-line"></i>
+                                Bayar Rp {{ number_format($booking->total_price, 0, ',', '.') }}
+                            </button>
+                        @endif
+                    </div>
+
                 </div>
 
-                {{-- Pay Button --}}
-                <div data-aos="fade-up" data-aos-delay="100">
-                    <button type="button" id="pay-button" class="btn-pay">
-                        <i class="ri-secure-payment-line"></i> Bayar Sekarang
-                    </button>
-                    <p class="pay-secure">
-                        <i class="ri-shield-check-line"></i> Pembayaran diproses secara aman oleh Midtrans
-                    </p>
+                <div class="detail-sidebar">
+                    <div class="detail-card booking-card" style="position:sticky; top:100px;">
+                        <h3><i class="ri-bill-line"></i> Total Pembayaran</h3>
+
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <strong>Rp {{ number_format($booking->subtotal, 0, ',', '.') }}</strong>
+                        </div>
+                        @if($booking->discount_amount > 0)
+                            <div class="summary-row">
+                                <span>Diskon</span>
+                                <strong style="color:#16a34a;">- Rp {{ number_format($booking->discount_amount, 0, ',', '.') }}</strong>
+                            </div>
+                        @endif
+                        <div class="summary-divider"></div>
+                        <div class="summary-row summary-total">
+                            <span>Total</span>
+                            <strong class="price-big">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</strong>
+                        </div>
+
+                        @if($booking->payments->where('status', 'pending')->first()?->expired_at)
+                            <div style="margin-top:0.75rem; font-size:12px; color:#e74c3c; text-align:center;">
+                                <i class="ri-time-line"></i>
+                                Bayar sebelum {{ $booking->payments->where('status','pending')->first()->expired_at->format('d M Y, H:i') }}
+                            </div>
+                        @endif
+
+                        <ul class="booking-features" style="margin-top:1.5rem;">
+                            <li><i class="ri-shield-check-line"></i> Pembayaran aman via Midtrans</li>
+                            <li><i class="ri-bank-card-line"></i> Transfer, QRIS, e-wallet</li>
+                            <li><i class="ri-customer-service-2-line"></i> Support 24/7</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,30 +148,29 @@
 
 @push('scripts')
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="{{ $isProduction ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js' }}" data-client-key="{{ $clientKey }}"></script>
+    @php($snapHost = config('services.midtrans.is_production') ? 'app.midtrans.com' : 'app.sandbox.midtrans.com')
+    <script src="https://{{ $snapHost }}/snap/snap.js"
+            data-client-key="{{ config('services.midtrans.client_key') }}"></script>
     <script>
         AOS.init({ duration: 800, once: true });
 
-        document.getElementById('pay-button').addEventListener('click', function () {
-            this.disabled = true;
-            this.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Memproses...';
-
-            window.snap.pay('{{ $snapToken }}', {
-                onSuccess: function(result) {
+        @if($booking->payment_token && $booking->payment_status !== 'paid')
+        document.getElementById('pay-button')?.addEventListener('click', function () {
+            snap.pay('{{ $booking->payment_token }}', {
+                onSuccess: function () {
                     window.location.href = '{{ route('payment.finish', $booking) }}';
                 },
-                onPending: function(result) {
+                onPending: function () {
                     window.location.href = '{{ route('payment.finish', $booking) }}';
                 },
-                onError: function(result) {
+                onError: function () {
                     alert('Pembayaran gagal. Silakan coba lagi.');
-                    window.location.reload();
                 },
-                onClose: function() {
-                    document.getElementById('pay-button').disabled = false;
-                    document.getElementById('pay-button').innerHTML = '<i class="ri-secure-payment-line"></i> Bayar Sekarang';
+                onClose: function () {
+                    console.log('Payment popup closed.');
                 }
             });
         });
+        @endif
     </script>
 @endpush

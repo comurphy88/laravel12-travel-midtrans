@@ -14,7 +14,7 @@
         </div>
         <ul class="nav__links" id="nav-links">
             <li><a href="{{ url('/') }}#home">Beranda</a></li>
-            <li><a href="{{ route('destinations.index') }}">Destinasi</a></li>
+            <li><a href="{{ route('bookings.create') }}">Tiket Bus</a></li>
             <li><a href="{{ url('/') }}#gallery">Galeri</a></li>
             <li><a href="{{ url('/') }}#testimonials">Testimoni</a></li>
             <li><a href="{{ url('/') }}#contact">Kontak</a></li>

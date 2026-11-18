@@ -3,8 +3,8 @@
 @section('title', 'Raven Travel - Perjalanan Elegan & Nyaman')
 
 @section('meta')
-    <meta name="description" content="Layanan bus premium dengan sentuhan elegan. Jelajahi berbagai destinasi wisata terbaik di seluruh Indonesia.">
-    <meta name="keywords" content="bus wisata, bus premium, tur candi, perjalanan spiritual, wisata Indonesia">
+    <meta name="description" content="Layanan bus premium dengan sentuhan elegan. Pesan tiket bus antar kota terbaik di Indonesia.">
+    <meta name="keywords" content="bus premium, tiket bus, bus antar kota, perjalanan Indonesia, raven travel">
 @endsection
 
 @push('styles')
@@ -13,17 +13,12 @@
 @endpush
 
 @section('body')
-    {{-- Navbar --}}
     @include('partials.navbar')
 
     {{-- Hero Section --}}
     <section id="home" class="hero-classic">
-        <div class="ornament ornament-top-left">
-            <i class="ri-leaf-line"></i>
-        </div>
-        <div class="ornament ornament-bottom-right">
-            <i class="ri-leaf-line"></i>
-        </div>
+        <div class="ornament ornament-top-left"><i class="ri-leaf-line"></i></div>
+        <div class="ornament ornament-bottom-right"><i class="ri-leaf-line"></i></div>
 
         <div class="hero__container">
             <div class="hero__content" data-aos="fade-up">
@@ -36,13 +31,13 @@
                 </h1>
                 <p class="hero__description">
                     Mulailah petualangan di mana kemewahan klasik bertemu kenyamanan modern.
-                    Nikmati seni perjalanan yang elegan dengan layanan bus premium kami ke berbagai destinasi wisata di seluruh Indonesia.
+                    Nikmati seni perjalanan yang elegan dengan layanan bus premium kami ke berbagai kota di seluruh Indonesia.
                 </p>
 
                 <div class="hero__stats">
                     <div class="stat-item">
-                        <h3 class="counter" data-target="{{ $stats['destinations'] }}">0</h3>
-                        <p>Destinasi</p>
+                        <h3 class="counter" data-target="{{ $stats['routes'] }}">0</h3>
+                        <p>Rute Tersedia</p>
                     </div>
                     <div class="stat-divider"></div>
                     <div class="stat-item">
@@ -52,8 +47,8 @@
                 </div>
 
                 <div class="hero__cta">
-                    <a href="{{ route('destinations.index') }}" class="btn btn-gold btn-lg">
-                        Jelajahi Destinasi
+                    <a href="{{ route('bookings.create') }}" class="btn btn-gold btn-lg">
+                        Pesan Tiket Bus
                         <i class="ri-arrow-right-line"></i>
                     </a>
                     <button class="btn-play" data-video="https://www.youtube.com/embed/dQw4w9WgXcQ">
@@ -83,15 +78,14 @@
     {{-- Call to Action Section --}}
     <section class="booking-section">
         <div class="section__container">
-            <div class="booking-card-elegant" data-aos="zoom-in" style="text-align: center; background: linear-gradient(135deg, #f5f1e8 0%, #f9f7f4 100%);">
-                <div class="booking-header" style="justify-content: center; flex-direction: column; border: none;">
-                    <i class="ri-map-journey-line" style="font-size: 40px; color: #c9a469; margin-bottom: 15px;"></i>
-                    <h3 style="margin: 0;">Siap untuk Perjalanan Anda?</h3>
-                    <p style="color: #999; margin-top: 10px; margin-bottom: 20px;">Pilih destinasi wisata Anda dan pesan perjalanan sekarang</p>
+            <div class="booking-card-elegant" data-aos="zoom-in" style="text-align:center; background:linear-gradient(135deg,#f5f1e8 0%,#f9f7f4 100%);">
+                <div class="booking-header" style="justify-content:center; flex-direction:column; border:none;">
+                    <i class="ri-bus-line" style="font-size:40px; color:#c9a469; margin-bottom:15px;"></i>
+                    <h3 style="margin:0;">Siap untuk Perjalanan Anda?</h3>
+                    <p style="color:#999; margin-top:10px; margin-bottom:20px;">Pilih rute bus dan pesan tiket perjalanan Anda sekarang</p>
                 </div>
-                <a href="{{ route('destinations.index') }}" class="btn btn-gold" style="display: inline-block;">
-                    <i class="ri-compass-3-line"></i>
-                    Jelajahi Destinasi
+                <a href="{{ route('bookings.create') }}" class="btn btn-gold" style="display:inline-block;">
+                    <i class="ri-ticket-2-line"></i> Pesan Tiket Bus
                 </a>
             </div>
         </div>
@@ -104,127 +98,116 @@
                 <span class="section-subtitle">Mengapa Memilih Kami</span>
                 <h2 class="section__title">Seni Perjalanan Premium</h2>
                 <div class="title-ornament">
-                    <span></span>
-                    <i class="ri-sparkling-line"></i>
-                    <span></span>
+                    <span></span><i class="ri-sparkling-line"></i><span></span>
                 </div>
             </div>
 
             <div class="features-grid">
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="feature-icon-wrapper">
-                        <i class="ri-vip-crown-fill"></i>
-                    </div>
+                    <div class="feature-icon-wrapper"><i class="ri-vip-crown-fill"></i></div>
                     <h4>Kenyamanan VIP</h4>
                     <p>Kursi reclining mewah dengan ruang kaki ekstra, sistem hiburan pribadi, dan pengaturan suhu.</p>
                 </div>
-
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="feature-icon-wrapper">
-                        <i class="ri-shield-check-fill"></i>
-                    </div>
+                    <div class="feature-icon-wrapper"><i class="ri-shield-check-fill"></i></div>
                     <h4>Utamakan Keselamatan</h4>
-                    <p>Pengemudi tersertifikasi, pelacakan GPS, pemantauan CCTV, dan perawatan kendaraan rutin untuk ketenangan pikiran Anda.</p>
+                    <p>Pengemudi tersertifikasi, pelacakan GPS, pemantauan CCTV, dan perawatan kendaraan rutin.</p>
                 </div>
-
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
-                    <div class="feature-icon-wrapper">
-                        <i class="ri-wifi-fill"></i>
-                    </div>
+                    <div class="feature-icon-wrapper"><i class="ri-wifi-fill"></i></div>
                     <h4>Tetap Terhubung</h4>
-                    <p>WiFi berkecepatan tinggi, port USB, dan stopkontak di setiap kursi untuk konektivitas tanpa hambatan.</p>
+                    <p>WiFi berkecepatan tinggi, port USB, dan stopkontak di setiap kursi.</p>
                 </div>
-
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
-                    <div class="feature-icon-wrapper">
-                        <i class="ri-restaurant-fill"></i>
-                    </div>
+                    <div class="feature-icon-wrapper"><i class="ri-restaurant-fill"></i></div>
                     <h4>Layanan Kuliner</h4>
                     <p>Minuman, camilan, dan makanan gratis yang disiapkan oleh tim hospitality di dalam bus.</p>
                 </div>
-
                 <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
-                    <div class="feature-icon-wrapper">
-                        <i class="ri-customer-service-2-fill"></i>
-                    </div>
+                    <div class="feature-icon-wrapper"><i class="ri-customer-service-2-fill"></i></div>
                     <h4>Dukungan 24/7</h4>
-                    <p>Layanan pelanggan sepanjang waktu siap membantu Anda sebelum, selama, dan setelah perjalanan.</p>
-                </div>
-
-                <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
-                    <div class="feature-icon-wrapper">
-                        <i class="ri-price-tag-3-fill"></i>
-                    </div>
-                    <h4>Harga Terbaik</h4>
-                    <p>Tarif kompetitif tanpa biaya tersembunyi. Diskon pemesanan awal dan reward loyalitas tersedia.</p>
+                    <p>Tim support siap membantu sebelum, saat, dan setelah perjalanan Anda.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- Destinations Section --}}
-    <section id="destinations" class="destinations-section">
+    {{-- Schedules Section --}}
+    <section id="schedules" class="destinations-section">
         <div class="section__container">
             <div class="section-header-classic" data-aos="fade-up">
-                <span class="section-subtitle">Destinasi Wisata</span>
-                <h2 class="section__title">Destinasi Wisata Populer</h2>
+                <span class="section-subtitle">Jadwal Perjalanan</span>
+                <h2 class="section__title">Jadwal Bus Tersedia</h2>
                 <div class="title-ornament">
-                    <span></span>
-                    <i class="ri-sparkling-line"></i>
-                    <span></span>
+                    <span></span><i class="ri-sparkling-line"></i><span></span>
                 </div>
                 <p class="section__description">
-                    Jelajahi berbagai destinasi wisata terbaik kami di seluruh Indonesia
+                    Temukan jadwal bus terbaik kami yang menghubungkan berbagai kota di Indonesia
                 </p>
             </div>
 
             <div class="destinations-grid">
-                @forelse ($destinations as $index => $dest)
+                @forelse ($schedules as $index => $schedule)
+                    @php $bus = $schedule->bus; $route = $schedule->route; @endphp
                     <div class="destination-card-elegant" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
-                        <div class="card-image-wrapper">
-                            <img src="{{ $dest->image }}" alt="{{ $dest->name }}" loading="lazy">
-                            <div class="card-badge">
-                                <i class="ri-star-fill"></i>
-                                {{ $dest->rating }}
-                            </div>
-                            <div class="card-overlay">
-                                <a href="{{ route('destinations.show', $dest) }}" class="btn-overlay">
-                                    <i class="ri-eye-line"></i>
-                                    Lihat Detail
-                                </a>
-                            </div>
-                        </div>
+                        <div class="card-content-elegant" style="padding:1.25rem;">
 
-                        <div class="card-content-elegant">
-                            <div class="card-location">
-                                <i class="ri-map-pin-line"></i>
-                                {{ $dest->location }}
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+                                <div>
+                                    <span style="font-size:11px; color:#999;">{{ $bus->type_label ?? 'Bus' }}</span>
+                                    <h3 style="margin:0; font-size:15px;">{{ $bus->bus_name ?? '-' }}</h3>
+                                </div>
+                                <span class="card-badge" style="position:static; font-size:11px;">
+                                    {{ $bus->bus_number ?? '' }}
+                                </span>
                             </div>
-                            <h3>{{ $dest->name }}</h3>
-                            <p>{{ Str::limit($dest->description, 100) }}</p>
 
-                            <div class="card-footer-elegant">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:0.75rem;">
+                                <div style="text-align:center;">
+                                    <div style="font-size:20px; font-weight:600;">{{ substr($schedule->departure_time, 0, 5) }}</div>
+                                    <div style="font-size:12px; color:#999;">{{ $route->origin ?? '-' }}</div>
+                                </div>
+                                <div style="flex:1; text-align:center;">
+                                    <div style="border-top:1px dashed #ccc; position:relative;">
+                                        <i class="ri-bus-line" style="position:absolute; top:-8px; left:50%; transform:translateX(-50%); background:#fff; padding:0 4px; color:#d4a017;"></i>
+                                    </div>
+                                </div>
+                                <div style="text-align:center;">
+                                    <div style="font-size:20px; font-weight:600; color:#999;">-</div>
+                                    <div style="font-size:12px; color:#999;">{{ $route->destination ?? '-' }}</div>
+                                </div>
+                            </div>
+
+                            @if($bus && $bus->facilities)
+                                <div style="font-size:11px; color:#999; margin-bottom:0.75rem;">
+                                    <i class="ri-checkbox-circle-line"></i> {{ $bus->facilities }}
+                                </div>
+                            @endif
+
+                            <div style="border-top:1px solid #eee; padding-top:0.75rem; display:flex; justify-content:space-between; align-items:center;">
                                 <div class="price-tag">
                                     <span class="price-label">Mulai</span>
-                                    <span class="price-amount">{{ $dest->formatted_price }}</span>
+                                    <span class="price-amount">
+                                        Rp {{ number_format(($bus->price_per_km ?? 0) * ($route->distance_km ?? 0), 0, ',', '.') }}
+                                    </span>
                                 </div>
-                                <a href="{{ route('bookings.create', ['destination' => $dest->id]) }}" class="btn btn-outline-gold">
-                                    Pesan Sekarang
-                                    <i class="ri-arrow-right-line"></i>
+                                <a href="{{ route('bookings.create', ['route_id' => $route->id ?? '']) }}" class="btn btn-outline-gold">
+                                    Pesan <i class="ri-arrow-right-line"></i>
                                 </a>
                             </div>
+
                         </div>
                     </div>
                 @empty
-                    <div class="text-center" style="grid-column: 1/-1; padding: 3rem;">
-                        <p>Belum ada destinasi tersedia saat ini.</p>
+                    <div class="text-center" style="grid-column:1/-1; padding:3rem;">
+                        <p>Belum ada jadwal tersedia saat ini.</p>
                     </div>
                 @endforelse
             </div>
 
             <div class="text-center mt-5" data-aos="fade-up">
-                <a href="{{ route('destinations.index') }}" class="btn btn-outline-dark btn-lg">
-                    Lihat Semua {{ $stats['destinations'] }} Destinasi
+                <a href="{{ route('bookings.create') }}" class="btn btn-outline-dark btn-lg">
+                    Lihat Semua {{ $stats['routes'] }} Rute
                     <i class="ri-arrow-right-line"></i>
                 </a>
             </div>
@@ -238,9 +221,7 @@
                 <span class="section-subtitle">Layanan Kami</span>
                 <h2 class="section__title">Layanan Premium, Perjalanan Tenang</h2>
                 <div class="title-ornament">
-                    <span></span>
-                    <i class="ri-sparkling-line"></i>
-                    <span></span>
+                    <span></span><i class="ri-sparkling-line"></i><span></span>
                 </div>
                 <p class="section__description">
                     Fasilitas kelas atas untuk memastikan perjalanan Anda aman, nyaman, dan berkesan.
@@ -272,7 +253,6 @@
         </div>
     </section>
 
-
     {{-- Gallery Section --}}
     <section id="gallery" class="gallery-section">
         <div class="section__container">
@@ -280,15 +260,9 @@
                 <span class="section-subtitle">Galeri</span>
                 <h2 class="section__title">Momen dalam Perjalanan</h2>
                 <div class="title-ornament">
-                    <span></span>
-                    <i class="ri-sparkling-line"></i>
-                    <span></span>
+                    <span></span><i class="ri-sparkling-line"></i><span></span>
                 </div>
-                <p class="section__description">
-                    Sekilas pengalaman perjalanan Raven Travel dari berbagai destinasi pilihan.
-                </p>
             </div>
-
             <div class="gallery-grid">
                 @foreach ($gallery as $item)
                     <div class="gallery-item" data-aos="zoom-in" data-aos-delay="{{ $loop->iteration * 100 }}">
@@ -307,12 +281,9 @@
                 <span class="section-subtitle">Testimoni</span>
                 <h2 class="section__title">Kata Para Pelancong Kami</h2>
                 <div class="title-ornament">
-                    <span></span>
-                    <i class="ri-sparkling-line"></i>
-                    <span></span>
+                    <span></span><i class="ri-sparkling-line"></i><span></span>
                 </div>
             </div>
-
             <div class="swiper testimonials-swiper" data-aos="fade-up" data-aos-delay="200">
                 <div class="swiper-wrapper">
                     @foreach ($testimonials as $testimonial)
@@ -361,29 +332,24 @@
     <section id="newsletter" class="newsletter-classic">
         <div class="section__container">
             <div class="newsletter-content" data-aos="fade-up">
-                <div class="newsletter-icon">
-                    <i class="ri-mail-line"></i>
-                </div>
+                <div class="newsletter-icon"><i class="ri-mail-line"></i></div>
                 <h3>Berlangganan Newsletter Kami</h3>
-                <p>Dapatkan penawaran eksklusif, tips perjalanan, dan info destinasi langsung ke email Anda</p>
-
+                <p>Dapatkan penawaran eksklusif, tips perjalanan, dan info rute terbaru langsung ke email Anda</p>
                 <form class="newsletter-form" id="newsletterForm" action="{{ route('newsletter.store') }}" method="POST">
                     @csrf
                     <div class="form-group-newsletter">
                         <input type="email" name="email" placeholder="Masukkan alamat email Anda" autocomplete="email" required>
                         <button type="submit" class="btn btn-gold">
-                            Berlangganan
-                            <i class="ri-send-plane-fill"></i>
+                            Berlangganan <i class="ri-send-plane-fill"></i>
                         </button>
                     </div>
                     <small>Kami menghormati privasi Anda. Berhenti berlangganan kapan saja.</small>
-                    <div id="newsletterMessage" style="display:none; margin-top: 10px; font-size: 0.9rem;"></div>
+                    <div id="newsletterMessage" style="display:none; margin-top:10px; font-size:0.9rem;"></div>
                 </form>
             </div>
         </div>
     </section>
 
-    {{-- Footer --}}
     @include('partials.footer')
 @endsection
 

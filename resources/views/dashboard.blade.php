@@ -83,15 +83,15 @@
                             <h3><i class="ri-compass-3-line"></i> Aksi Cepat</h3>
                         </div>
                         <div class="dash-quick-actions">
-                            <a href="{{ route('destinations.index') }}" class="dash-action-tile">
-                                <div class="dash-action-tile__icon"><i class="ri-map-pin-line"></i></div>
-                                <strong>Jelajahi Destinasi</strong>
-                                <p>Temukan rute premium di seluruh Indonesia</p>
-                            </a>
                             <a href="{{ route('bookings.create') }}" class="dash-action-tile">
-                                <div class="dash-action-tile__icon"><i class="ri-calendar-check-line"></i></div>
-                                <strong>Pesan Perjalanan</strong>
-                                <p>Reservasi kursi untuk perjalanan berikutnya</p>
+                                <div class="dash-action-tile__icon"><i class="ri-bus-line"></i></div>
+                                <strong>Pesan Tiket Bus</strong>
+                                <p>Pilih rute dan jadwal bus premium</p>
+                            </a>
+                            <a href="{{ route('bookings.index') }}" class="dash-action-tile">
+                                <div class="dash-action-tile__icon"><i class="ri-ticket-2-line"></i></div>
+                                <strong>Pesanan Saya</strong>
+                                <p>Lihat riwayat dan status pesanan</p>
                             </a>
                             <a href="{{ route('profile.edit') }}" class="dash-action-tile">
                                 <div class="dash-action-tile__icon"><i class="ri-user-settings-line"></i></div>
@@ -137,24 +137,35 @@
                         </div>
                         <h4>Belum ada perjalanan</h4>
                         <p>Riwayat perjalanan Anda akan muncul di sini setelah Anda melakukan pemesanan pertama.</p>
-                        <a href="{{ route('destinations.index') }}" class="button button--gold">
-                            Jelajahi Destinasi
+                        <a href="{{ route('bookings.create') }}" class="button button--gold">
+                            Pesan Tiket Bus
                             <i class="ri-arrow-right-line"></i>
                         </a>
                     </div>
                     @else
                     <div class="dash-activity-list">
                         @foreach($recentBookings as $booking)
+                        @php $bus = $booking->schedule?->bus; @endphp
                         <a href="{{ route('bookings.show', $booking) }}" class="dash-activity-item">
                             <div class="dash-activity-item__icon">
                                 <i class="ri-ticket-2-line"></i>
                             </div>
                             <div class="dash-activity-item__info">
                                 <strong>{{ $booking->booking_code }}</strong>
-                                <span>{{ $booking->busRoute?->route_name ?? $booking->destination?->name ?? '-' }}</span>
+                                <span>
+                                    {{ $booking->origin ?? '-' }} → {{ $booking->destination ?? '-' }}
+                                    @if($bus)
+                                        · {{ $bus->bus_name }}
+                                    @endif
+                                    @if($booking->departure_time)
+                                        · {{ substr($booking->departure_time, 0, 5) }}
+                                    @endif
+                                </span>
                             </div>
                             <div class="dash-activity-item__meta">
-                                <span class="badge badge--{{ $booking->status === 'completed' ? 'green' : ($booking->status === 'cancelled' ? 'red' : 'gold') }}">{{ ucfirst($booking->status) }}</span>
+                                <span class="badge badge--{{ $booking->status === 'completed' ? 'green' : ($booking->status === 'cancelled' ? 'red' : 'gold') }}">
+                                    {{ ucfirst($booking->status) }}
+                                </span>
                                 <small>{{ $booking->created_at->diffForHumans() }}</small>
                             </div>
                         </a>
